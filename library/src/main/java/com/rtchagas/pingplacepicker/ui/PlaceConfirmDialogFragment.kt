@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.lifecycle.Observer
 import androidx.transition.TransitionManager
+import com.bumptech.glide.Glide
 import com.google.android.libraries.places.api.model.Place
 import com.rtchagas.pingplacepicker.Config
 import com.rtchagas.pingplacepicker.PingPlacePicker
@@ -19,7 +20,6 @@ import com.rtchagas.pingplacepicker.R
 import com.rtchagas.pingplacepicker.inject.PingKoinComponent
 import com.rtchagas.pingplacepicker.viewmodel.PlaceConfirmDialogViewModel
 import com.rtchagas.pingplacepicker.viewmodel.Resource
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_dialog_place_confirm.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -102,7 +102,8 @@ class PlaceConfirmDialogFragment : AppCompatDialogFragment(), PingKoinComponent 
                     .format(place.latLng?.latitude,
                             place.latLng?.longitude,
                             PingPlacePicker.androidApiKey)
-            Picasso.get().load(staticMapUrl).into(contentView.ivPlaceMap)
+            Glide.with(context!!).load(staticMapUrl).into(contentView.ivPlaceMap)
+//            Picasso.get().load(staticMapUrl).into(contentView.ivPlaceMap)
         }
         else {
             contentView.ivPlaceMap.visibility = View.GONE
