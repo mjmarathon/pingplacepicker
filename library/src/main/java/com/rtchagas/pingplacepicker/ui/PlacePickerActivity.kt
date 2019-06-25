@@ -280,6 +280,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
 
                         // Set the map's camera position to the current location of the device.
                         lastKnownLocation = LatLng(location.latitude, location.longitude)
+                        coordinatesTextView.text = "${latitudeAsDMS(location.latitude, 2)}, ${longitudeAsDMS(location.longitude, 2)}"
 
                         val update = CameraUpdateFactory
                                 .newLatLngZoom(lastKnownLocation, defaultZoom)
