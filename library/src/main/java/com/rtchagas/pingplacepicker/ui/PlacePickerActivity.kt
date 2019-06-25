@@ -27,6 +27,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.internal.it
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.appbar.AppBarLayout
@@ -42,11 +43,16 @@ import com.rtchagas.pingplacepicker.viewmodel.Resource
 import kotlinx.android.synthetic.main.activity_place_picker.*
 import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.viewModel
+import kotlin.math.abs
+import kotlin.math.absoluteValue
 
 
 class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnPoiClickListener,
         PlaceConfirmDialogFragment.OnPlaceConfirmedListener {
 
     companion object {
@@ -89,10 +95,8 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Retrieve location and camera position from saved instance state.
-        lastKnownLocation = savedInstanceState
-                ?.getParcelable(STATE_LOCATION) ?: lastKnownLocation
-        cameraPosition = savedInstanceState
-                ?.getParcelable(STATE_CAMERA_POSITION) ?: cameraPosition
+        lastKnownLocation = savedInstanceState?.getParcelable(STATE_LOCATION) ?: lastKnownLocation
+        cameraPosition = savedInstanceState?.getParcelable(STATE_CAMERA_POSITION) ?: cameraPosition
 
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -116,8 +120,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
 
         if ((requestCode == AUTOCOMPLETE_REQUEST_CODE) && (resultCode == Activity.RESULT_OK)) {
             data?.run {
-                val place = Autocomplete.getPlaceFromIntent(this)
-                showConfirmPlacePopup(place)
+                onPlaceConfirmed(Autocomplete.getPlaceFromIntent(this))
             }
         }
     }
@@ -153,14 +156,17 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
 
     override fun onMapReady(map: GoogleMap?) {
         googleMap = map
-        map?.setOnMarkerClickListener(this)
+        map?.setOnMarkerClickListener(this as GoogleMap.OnMarkerClickListener)
+        map?.setOnCameraMoveListener(this)
+        map?.setOnMapClickListener(this)
+        map?.setOnPoiClickListener(this)
         checkForPermission()
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
 
         val place = marker.tag as Place
-        showConfirmPlacePopup(place)
+        onPlaceConfirmed(place)
 
         return false
     }
@@ -172,12 +178,54 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
         finish()
     }
 
+    override fun onMapClick(p0: LatLng?) {
+        googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(p0, defaultZoom))
+    }
+
+    override fun onCameraMove() {
+        val target = googleMap?.cameraPosition?.target!!
+        coordinatesTextView.text = "${latitudeAsDMS(target.latitude, 2)}, ${longitudeAsDMS(target.longitude, 2)}"
+    }
+
+    override fun onPoiClick(poi: PointOfInterest?) {
+        poi?.let { location -> viewModel.getPlaceByLocation(location.latLng).observe(this, Observer { handlePlaceByLocation(it) }) }
+    }
+
+    private fun latitudeAsDMS(latitude: Double, decimalPlace: Int): String {
+        val direction = if (latitude > 0) "N" else "S"
+        var strLatitude = Location.convert(latitude.absoluteValue, Location.FORMAT_SECONDS)
+        strLatitude = replaceDelimiters(strLatitude, decimalPlace)
+        strLatitude += " $direction"
+        return strLatitude
+    }
+
+    private fun longitudeAsDMS(longitude: Double, decimalPlace: Int): String {
+        val direction = if (longitude > 0) "W" else "E"
+        var strLongitude = Location.convert(longitude.absoluteValue, Location.FORMAT_SECONDS)
+        strLongitude = replaceDelimiters(strLongitude, decimalPlace)
+        strLongitude += " $direction"
+        return strLongitude
+    }
+
+    private fun replaceDelimiters(str: String, decimalPlace: Int): String {
+        var str = str
+        str = str.replaceFirst(":".toRegex(), "°")
+        str = str.replaceFirst(":".toRegex(), "'")
+        val pointIndex = str.indexOf(".")
+        val endIndex = pointIndex + 1 + decimalPlace
+        if (endIndex < str.length) {
+            str = str.substring(0, endIndex)
+        }
+        str += "\""
+        return str
+    }
+
     private fun bindPlaces(places: List<Place>) {
 
         // Bind to the recycler view
 
         if (placeAdapter == null) {
-            placeAdapter = PlacePickerAdapter(places) { showConfirmPlacePopup(it) }
+            placeAdapter = PlacePickerAdapter(places) { onPlaceConfirmed(it) }
         }
         else {
             placeAdapter?.swapData(places)
@@ -291,7 +339,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
                 pbLoading.show()
             }
             Resource.Status.SUCCESS -> {
-                result.data?.run { showConfirmPlacePopup(this) }
+                result.data?.run { onPlaceConfirmed(this) }
                 pbLoading.hide()
             }
             Resource.Status.ERROR -> {
@@ -328,7 +376,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
         btnMyLocation.setOnClickListener { getDeviceLocation(true) }
         cardSearch.setOnClickListener { requestPlacesSearch() }
         ivMarkerSelect.setOnClickListener { selectThisPlace() }
-        tvLocationSelect.setOnClickListener { selectThisPlace() }
+        selectionView.setOnClickListener { selectThisPlace() }
 
         // Hide or show the card search according to the width
         cardSearch.visibility =
@@ -338,7 +386,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
         // Add a nice fade effect to toolbar
         appBarLayout.addOnOffsetChangedListener(
                 AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-                    toolbar.alpha = Math.abs(verticalOffset / appBarLayout.totalScrollRange.toFloat())
+                    toolbar.alpha = abs(verticalOffset / appBarLayout.totalScrollRange.toFloat())
                 })
 
         // Disable vertical scrolling on appBarLayout (it messes with the map...)
@@ -388,8 +436,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
     }
 
     private fun loadNearbyPlaces() {
-        viewModel.getNearbyPlaces(lastKnownLocation ?: defaultLocation)
-                .observe(this, Observer { handlePlacesLoaded(it) })
+        viewModel.getNearbyPlaces(lastKnownLocation ?: defaultLocation).observe(this, Observer { handlePlacesLoaded(it) })
     }
 
     private fun requestPlacesSearch() {
@@ -426,9 +473,8 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
     }
 
     private fun selectThisPlace() {
-        googleMap?.cameraPosition?.run {
-            viewModel.getPlaceByLocation(this.target).observe(this@PlacePickerActivity,
-                    Observer { handlePlaceByLocation(it) })
+        googleMap?.cameraPosition?.let { pos ->
+            viewModel.getPlaceByLocation(pos.target).observe(this, Observer { handlePlaceByLocation(it) })
         }
     }
 

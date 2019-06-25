@@ -22,91 +22,6 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:titleEnabled="false">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/material_white"
-                android:fitsSystemWindows="true"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.4">
-
-                <FrameLayout
-                    android:id="@+id/frameMap"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginBottom="@dimen/selector_margin"
-                    app:layout_constraintBottom_toTopOf="@id/ivMarkerSelect"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <fragment
-                        android:id="@+id/map"
-                        android:name="com.google.android.gms.maps.SupportMapFragment"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        app:srcCompat="@drawable/ic_map_marker_select_red_48dp"
-                        tools:ignore="ContentDescription" />
-
-                </FrameLayout>
-
-                <ImageButton
-                    android:id="@+id/btnMyLocation"
-                    android:layout_width="@dimen/button_my_location_size"
-                    android:layout_height="@dimen/button_my_location_size"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:layout_marginBottom="@dimen/default_margin"
-                    android:background="@drawable/bg_button_round"
-                    android:elevation="@dimen/material_elevation_fab"
-                    android:tint="@color/colorPrimary"
-                    app:layout_constraintBottom_toBottomOf="@id/frameMap"
-                    app:layout_constraintEnd_toEndOf="@id/frameMap"
-                    app:srcCompat="@drawable/ic_crosshairs_gps_black_24dp"
-                    tools:ignore="ContentDescription"
-                    tools:targetApi="lollipop" />
-
-                <ImageView
-                    android:id="@+id/ivMarkerSelect"
-                    android:layout_width="@dimen/icon_size_small"
-                    android:layout_height="@dimen/icon_size_small"
-                    android:layout_marginStart="@dimen/guide_start_margin"
-                    android:layout_marginBottom="@dimen/selector_margin"
-                    android:contentDescription="@string/picker_select_this"
-                    android:tint="?attr/colorAccent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:srcCompat="@drawable/ic_map_marker_black_24dp" />
-
-                <TextView
-                    android:id="@+id/tvLocationSelect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/guide_content_margin"
-                    android:text="@string/picker_select_this"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:textColor="?attr/colorAccent"
-                    app:layout_constraintBottom_toTopOf="@id/ivMarkerSelect"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ivMarkerSelect" />
-
-                <androidx.core.widget.ContentLoadingProgressBar
-                    android:id="@+id/pbLoading"
-                    style="@style/Widget.AppCompat.ProgressBar"
-                    android:layout_width="@dimen/icon_size_small"
-                    android:layout_height="@dimen/icon_size_small"
-                    android:indeterminate="true"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toTopOf="@id/ivMarkerSelect"
-                    app:layout_constraintEnd_toStartOf="@id/btnMyLocation"
-                    app:layout_constraintStart_toEndOf="@id/btnMyLocation"
-                    app:layout_constraintTop_toBottomOf="@id/ivMarkerSelect" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -119,9 +34,9 @@
                 android:id="@+id/cardSearch"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/card_search_height"
+                android:layout_marginEnd="@dimen/card_search_margin_horizontal"
                 android:layout_marginStart="@dimen/card_search_margin_horizontal"
                 android:layout_marginTop="@dimen/card_search_margin_top"
-                android:layout_marginEnd="@dimen/card_search_margin_horizontal"
                 app:cardBackgroundColor="@color/material_white"
                 app:cardElevation="@dimen/material_elevation_app_bar"
                 app:layout_collapseMode="parallax"
@@ -147,6 +62,118 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/material_white"
+                android:fitsSystemWindows="true"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.4"
+                tools:layout_marginTop="250dp">
+
+                <FrameLayout
+                    android:id="@+id/frameMap"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="@dimen/selector_margin"
+                    app:layout_constraintBottom_toTopOf="@id/ivMarkerSelect"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <fragment
+                        android:id="@+id/map"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/ic_map_marker_select_red_48dp"
+                        tools:ignore="ContentDescription" />
+
+                </FrameLayout>
+
+                <View
+                    android:id="@+id/selectionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:translationZ="4dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/frameMap"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+                <ImageButton
+                    android:id="@+id/btnMyLocation"
+                    android:layout_width="@dimen/button_my_location_size"
+                    android:layout_height="@dimen/button_my_location_size"
+                    android:layout_marginEnd="@dimen/default_margin"
+                    android:layout_marginBottom="@dimen/default_margin"
+                    android:background="@drawable/bg_button_round"
+                    android:elevation="@dimen/material_elevation_fab"
+                    android:tint="@color/colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="@id/frameMap"
+                    app:layout_constraintEnd_toEndOf="@id/selectionView"
+                    app:srcCompat="@drawable/ic_crosshairs_gps_black_24dp"
+                    tools:ignore="ContentDescription"
+                    tools:targetApi="lollipop" />
+
+                <ImageView
+                    android:id="@+id/ivMarkerSelect"
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/guide_start_margin"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:contentDescription="@string/picker_select_this"
+                    android:tint="?attr/colorAccent"
+                    app:layout_constraintTop_toTopOf="@id/selectionView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/selectionView"
+                    app:srcCompat="@drawable/ic_map_marker_black_24dp" />
+
+                <TextView
+                    android:id="@+id/tvLocationSelect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/picker_select_this"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:textColor="?attr/colorAccent"
+                    app:layout_constraintTop_toTopOf="@id/selectionView"
+                    app:layout_constraintStart_toEndOf="@+id/ivMarkerSelect" />
+
+                <TextView
+                    android:id="@+id/coordinatesTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:textColor="?attr/colorAccent"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tvLocationSelect"
+                    app:layout_constraintTop_toBottomOf="@id/tvLocationSelect"
+                    tools:text="lat long go here" />
+
+                <androidx.core.widget.ContentLoadingProgressBar
+                    android:id="@+id/pbLoading"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:indeterminate="true"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toTopOf="@id/ivMarkerSelect"
+                    app:layout_constraintEnd_toStartOf="@id/btnMyLocation"
+                    app:layout_constraintStart_toEndOf="@id/btnMyLocation"
+                    app:layout_constraintTop_toBottomOf="@id/ivMarkerSelect" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -155,7 +182,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBackground"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:layout_marginTop="400dp"
+        tools:layout_height="300dp">
 
         <LinearLayout
             android:layout_width="match_parent"
