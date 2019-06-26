@@ -51,8 +51,8 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMapClickListener,
-        GoogleMap.OnCameraMoveListener,
         GoogleMap.OnPoiClickListener,
+        GoogleMap.OnCameraIdleListener,
         PlaceConfirmDialogFragment.OnPlaceConfirmedListener {
 
     companion object {
@@ -157,7 +157,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
     override fun onMapReady(map: GoogleMap?) {
         googleMap = map
         map?.setOnMarkerClickListener(this as GoogleMap.OnMarkerClickListener)
-        map?.setOnCameraMoveListener(this)
+        map?.setOnCameraIdleListener(this)
         map?.setOnMapClickListener(this)
         map?.setOnPoiClickListener(this)
         checkForPermission()
@@ -182,7 +182,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
         googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(p0, defaultZoom))
     }
 
-    override fun onCameraMove() {
+    override fun onCameraIdle() {
         val target = googleMap?.cameraPosition?.target!!
         coordinatesTextView.text = "${latitudeAsDMS(target.latitude, 2)}, ${longitudeAsDMS(target.longitude, 2)}"
     }
