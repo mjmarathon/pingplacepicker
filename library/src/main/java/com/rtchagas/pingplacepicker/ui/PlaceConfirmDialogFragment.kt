@@ -20,6 +20,7 @@ import com.rtchagas.pingplacepicker.R
 import com.rtchagas.pingplacepicker.inject.PingKoinComponent
 import com.rtchagas.pingplacepicker.viewmodel.PlaceConfirmDialogViewModel
 import com.rtchagas.pingplacepicker.viewmodel.Resource
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_dialog_place_confirm.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -68,11 +69,11 @@ class PlaceConfirmDialogFragment : AppCompatDialogFragment(), PingKoinComponent 
 
         builder.setTitle(R.string.picker_place_confirm)
                 .setView(getContentView(activity!!))
-                .setPositiveButton(android.R.string.ok) { dialog, which ->
+                .setPositiveButton(android.R.string.ok) { _, _ ->
                     confirmListener?.onPlaceConfirmed(place)
                     dismiss()
                 }
-                .setNegativeButton(R.string.picker_place_confirm_cancel) { dialog, which ->
+                .setNegativeButton(R.string.picker_place_confirm_cancel) { _, _ ->
                     // Just dismiss here...
                     dismiss()
                 }
@@ -102,8 +103,7 @@ class PlaceConfirmDialogFragment : AppCompatDialogFragment(), PingKoinComponent 
                     .format(place.latLng?.latitude,
                             place.latLng?.longitude,
                             PingPlacePicker.androidApiKey)
-            Glide.with(context!!).load(staticMapUrl).into(contentView.ivPlaceMap)
-//            Picasso.get().load(staticMapUrl).into(contentView.ivPlaceMap)
+            Picasso.get().load(staticMapUrl).into(contentView.ivPlaceMap)
         }
         else {
             contentView.ivPlaceMap.visibility = View.GONE
