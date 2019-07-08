@@ -102,7 +102,7 @@ class GoogleMapsRepository constructor(
     /**
      * This call to Google Places API is totally free :)
      */
-    override fun getPlaceById(placeId: String): Single<Place> {
+    private fun getPlaceById(placeId: String): Single<Place> {
 
         // Create the request
         val request = FetchPlaceRequest.builder(placeId, getPlaceFields()).build()
