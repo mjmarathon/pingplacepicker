@@ -61,23 +61,4 @@ class PlacePickerViewModel constructor(private var repository: PlaceRepository)
 
         return liveData
     }
-
-    fun getPlaceById(placeId: String): LiveData<Resource<Place?>> {
-
-        val liveData = MutableLiveData<Resource<Place?>>()
-
-        val disposable: Disposable = repository.getPlaceById(placeId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { liveData.value = Resource.loading() }
-                .subscribe(
-                        { result: Place -> liveData.value = Resource.success(result) },
-                        { error: Throwable -> liveData.value = Resource.error(error) }
-                )
-
-        // Keep track of this disposable during the ViewModel lifecycle
-        addDisposable(disposable)
-
-        return liveData
-    }
 }
