@@ -188,7 +188,7 @@ class PlacePickerActivity : AppCompatActivity(), PingKoinComponent,
     }
 
     override fun onPoiClick(poi: PointOfInterest?) {
-        poi?.let { interestingPlace -> viewModel.getPlaceByLocation(interestingPlace.latLng).observe(this, Observer { handlePlaceByLocation(it) }) }
+        poi?.let { interestingPlace -> viewModel.getPlaceByPOI(interestingPlace).observe(this, Observer { handlePlaceByLocation(it) }) }
     }
 
     private fun latitudeAsDMS(latitude: Double, decimalPlace: Int): String {

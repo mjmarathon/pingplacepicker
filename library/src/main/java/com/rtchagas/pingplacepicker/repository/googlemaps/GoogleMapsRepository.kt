@@ -3,6 +3,7 @@ package com.rtchagas.pingplacepicker.repository.googlemaps
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PointOfInterest
 import com.google.android.libraries.places.api.model.PhotoMetadata
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.PlaceLikelihood
@@ -77,6 +78,20 @@ class GoogleMapsRepository constructor(
             }.addOnFailureListener {
                 emitter.onError(it)
             }
+        }
+    }
+
+    override fun getPlaceByPOI(poi: PointOfInterest): Single<Place> {
+        val request = FetchPlaceRequest.builder(poi.placeId, getPlaceFields()).build()
+
+        return Single.create { emitter ->
+            googleClient.fetchPlace(request)
+                    .addOnSuccessListener {
+                        emitter.onSuccess(it.place)
+                    }
+                    .addOnFailureListener {
+                        emitter.onError(it)
+                    }
         }
     }
 

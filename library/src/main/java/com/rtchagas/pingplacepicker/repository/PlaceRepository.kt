@@ -2,6 +2,7 @@ package com.rtchagas.pingplacepicker.repository
 
 import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PointOfInterest
 import com.google.android.libraries.places.api.model.PhotoMetadata
 import com.google.android.libraries.places.api.model.Place
 import io.reactivex.Single
@@ -19,4 +20,6 @@ interface PlaceRepository {
     fun getPlacePhoto(photoMetadata: PhotoMetadata): Single<Bitmap>
 
     fun getPlaceByLocation(location: LatLng): Single<Place?>
+
+    fun getPlaceByPOI(poi: PointOfInterest): Single<Place>
 }

@@ -3,6 +3,7 @@ package com.rtchagas.pingplacepicker.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PointOfInterest
 import com.google.android.libraries.places.api.model.Place
 import com.rtchagas.pingplacepicker.repository.PlaceRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -48,6 +49,24 @@ class PlacePickerViewModel constructor(private var repository: PlaceRepository)
         val liveData = MutableLiveData<Resource<Place?>>()
 
         val disposable: Disposable = repository.getPlaceByLocation(location)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { liveData.value = Resource.loading() }
+                .subscribe(
+                        { result: Place? -> liveData.value = Resource.success(result) },
+                        { error: Throwable -> liveData.value = Resource.error(error) }
+                )
+
+        // Keep track of this disposable during the ViewModel lifecycle
+        addDisposable(disposable)
+
+        return liveData
+    }
+
+    fun getPlaceByPOI(poi: PointOfInterest): LiveData<Resource<Place?>> {
+        val liveData = MutableLiveData<Resource<Place?>>()
+
+        val disposable: Disposable = repository.getPlaceByPOI(poi)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { liveData.value = Resource.loading() }
