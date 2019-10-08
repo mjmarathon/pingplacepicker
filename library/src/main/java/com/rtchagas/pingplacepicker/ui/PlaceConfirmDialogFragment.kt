@@ -77,6 +77,7 @@ class PlaceConfirmDialogFragment : AppCompatDialogFragment(), PingKoinComponent 
                     // Just dismiss here...
                     dismiss()
                 }
+                .setCancelable(false)
 
         return builder.create()
     }
